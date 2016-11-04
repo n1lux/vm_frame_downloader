@@ -8,6 +8,8 @@ import unicodedata
 from queue import Queue
 import time
 
+
+
 class Parser:
     def __init__(self):
         pass
@@ -79,6 +81,7 @@ class HtmlRead:
     def __init__(self):
         self.file_name = "page.dad"
         self.c = Content()
+        self.q = Queue()
 
     @staticmethod
     def _clean_file(f):
@@ -127,9 +130,8 @@ class HtmlRead:
             in_q.task_done()
 
     def wait_from_file(self, repo_dir):
-        q = Queue()
-        thr_get_f = Thread(target=self._get_file_content, args=(q, repo_dir,))
-        thr_chk_f = Thread(target=HtmlRead._check_stat_file, args=(q, self.file_name,))
+        thr_get_f = Thread(target=self._get_file_content, args=(self.q, repo_dir,))
+        thr_chk_f = Thread(target=HtmlRead._check_stat_file, args=(self.q, self.file_name,))
 
         thr_get_f.start()
         thr_chk_f.start()
