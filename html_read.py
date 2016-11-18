@@ -36,9 +36,15 @@ class Content:
 
     @staticmethod
     def _sanitize(name):
+        invalid_chars = ((' ', '_'), (':', '-'), ('/', '_'))
         str_tmp = urllib.parse.unquote(name)
         str_tmp = unicodedata.normalize('NFKD', str_tmp).encode('ASCII', 'ignore')
-        str_tmp = str_tmp.decode('utf8').replace(' ', '_').replace(':', '-')
+        str_tmp = str_tmp.decode('utf8')
+
+        for i in invalid_chars:
+            if i[0] in str_tmp:
+                str_tmp = str_tmp.replace(i[0], i[1])
+
         return str_tmp
 
 
@@ -110,8 +116,8 @@ class HtmlRead:
                     fp.seek(0)
                     if data and isinstance(data, list):
                         if 1 < len(data[0]) < 1024:
-                            print("\n\nFile name: {}".format(data[0]))
-                            file_name = data[0].split("\n")[0]
+                            file_name = Content._sanitize(data[0].split("\n")[0])
+                            print("\n\nFile name: {}".format(file_name))
                             self._clean_file(fp)
                             fp.close()
                             continue
