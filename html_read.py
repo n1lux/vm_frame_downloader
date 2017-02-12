@@ -13,6 +13,16 @@ import time
 class Parser:
     def __init__(self):
         pass
+    
+    @staticmethod
+    def identify_best_quality(urls):
+        vm_qualits = ('1080p', '720p', '360p', '270p')
+        if urls:
+            for q in vm_qualits:
+                if any(q in url for url in urls):
+                    print("Video quality found %s" %q)
+                    return q
+        
 
     @staticmethod
     def parse_url_file(file_stream):
@@ -21,8 +31,9 @@ class Parser:
         for s in all_script:
             if 'token' in s.string:
                 prob_urls = re.search("(?P<url>https?://[^\s]+)", s.string).group('url').split('url')
+                bq = Parser.identify_best_quality(prob_urls)
                 for p in prob_urls:
-                    if 'token' in p and '1080' in p:
+                    if 'token' in p and bq in p:
                         for t in p.split(','):
                             if 'token' in t and t.startswith('":'):
                                 return t.split('":')[1]
